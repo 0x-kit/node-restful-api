@@ -3,6 +3,7 @@ const router = express.Router();
 
 const Product = require('../models/product');
 const mongoose = require('mongoose');
+
 const multer = require('multer');
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
@@ -11,12 +12,26 @@ const storage = multer.diskStorage({
     filename: function(req, file, cb) {
         cb(null, new Date().toISOString() + file.originalname);
     }
-})
-const upload = multer({storage: storage});
+});
+
+const fileFilter = (req, file, cb) => {
+    if(file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
+        cb(null, true);
+    } else {
+        //reject a file
+        cb(null, false)
+    }
+};
+
+const upload = multer({
+    storage: storage, 
+    limits:{fileSize: 1024 * 1024 * 5}, // 5MB
+    fileFilter : fileFilter
+});
 
 router.get('/', (req, res, next) => {
     Product.find()
-        .select('name price _id')
+        .select('name price _id productImage')
         .exec()
         .then(docs => {
             const response = {
@@ -26,6 +41,7 @@ router.get('/', (req, res, next) => {
                         id: doc._id,
                         name: doc.name,
                         price: doc.price,
+                        productImage: doc.productImage,
                         request: {
                             type: 'GET',
                             url: `http://localhost:3000/products/${doc._id}`
@@ -44,7 +60,8 @@ router.post('/',upload.single('productImage'),(req, res, next) => {
     const product = new Product({
         _id: new mongoose.Types.ObjectId(),
         name: req.body.name,
-        price: req.body.price
+        price: req.body.price,
+        productImage: req.file.path
     });
 
     product.save()
@@ -70,7 +87,7 @@ router.get('/:productId', (req, res, next) => {
     const id = req.params.productId;
 
     Product.findById(id)
-        .select('name price _id')
+        .select('name price _id productImage')
         .exec()
         .then(doc => {
             console.log("From database", doc);

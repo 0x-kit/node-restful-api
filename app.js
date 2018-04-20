@@ -11,6 +11,8 @@ mongoose.connect('mongodb://node-shop:' + process.env.MONGO_ATLAS_PW + '@node-re
 
 // Middlewares
 app.use(morgan('dev'));
+//It makes uploads folder available to everyone
+app.use(express.static('uploads'));
 app.use(express.urlencoded({extended: false}));
 app.use(express.json());
 
