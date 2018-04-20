@@ -71,6 +71,7 @@ router.get('/:orderId', (req, res, next) => {
 
     Order.findById(id)
     .select('-__v')
+    .populate('product')
     .exec()
     .then(doc => {
         if(doc) {
