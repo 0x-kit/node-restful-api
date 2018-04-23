@@ -24,7 +24,6 @@ exports.orders_get_all = (req, res, next) => {
             });
         })
         .catch(err => { res.status(500).json({ error: err }); });
-
 }
 
 exports.orders_create_order = (req, res, next) => {
@@ -84,7 +83,6 @@ exports.orders_get_order = (req, res, next) => {
             res.status(404).json({message: 'Not valid entry found for provided ID'})
     })
     .catch(err => { res.status(500).json({ error: err }) });
-
 }
 
 exports.orders_delete_order = (req, res, next) => {
@@ -103,5 +101,4 @@ exports.orders_delete_order = (req, res, next) => {
         });
     })
     .catch(err => { res.status(500).json({ error: err }); });
-
 }
